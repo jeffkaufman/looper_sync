@@ -1,0 +1,10 @@
+Usage:
+
+  $ sudo apt-get install jackd libjack-dev
+  $ make
+  plug in usb mouse
+  $ sudo chmod ugo+r /dev/input/mouse*
+  plug in external microphone, speakers
+  mess with alsamixer and make them reasonable for recording and playback
+  $ jackd -d alsa -p 256 &
+  $ ./looper_sync
