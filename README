@@ -1,3 +1,8 @@
+This is code to allow one to use a linux computer as a looping pedal.
+It's designed around a three button mouse that I made foot operated.
+It works better when run on a virtual terminal because then your
+clicks don't go to X.
+
 Usage:
 
   $ sudo apt-get install jackd libjack-dev
@@ -9,6 +14,26 @@ Usage:
   $ jackd -d alsa -p 256 &
   $ ./looper_sync
 
-Warning: if you use a mouse that reports X and Y (not a stripped three
-button mouse turned into a stompbox) then because I'm lazy and don't
-parse /dev/input/mouse properly you'll confuse it.
+Operation:
+
+ - tap a pedal to start a loop, tap it again to start looping, tap it
+   a third time to stop it.
+
+ - once you have a primary loop going, tapping another pedal will make
+   it wait until the top of the loop, then start recording for one
+   time through.  This loop will immediately start playing when it's
+   done recording.  Once playing, additional taps will quiet it.
+
+
+Warning: 
+
+  if you use a mouse that reports X and Y (not a stripped three button
+  mouse turned into a stompbox) then because I'm lazy and don't parse
+  /dev/input/mouse properly you'll confuse it.
+
+
+Copying: 
+
+  the base code was jack sample code, which I think is under the gpl.
+  My changes to it are as free as is allowed.  That is, if the example
+  code is actually public domain, so is this.  Otherwise, it's gpl.
