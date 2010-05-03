@@ -8,3 +8,7 @@ Usage:
   mess with alsamixer and make them reasonable for recording and playback
   $ jackd -d alsa -p 256 &
   $ ./looper_sync
+
+Warning: if you use a mouse that reports X and Y (not a stripped three
+button mouse turned into a stompbox) then because I'm lazy and don't
+parse /dev/input/mouse properly you'll confuse it.
