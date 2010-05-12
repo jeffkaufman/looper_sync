@@ -97,6 +97,7 @@ int potato_time;
 int potato_p1p2; 
 int potato_p2p3; 
 int potato_p3p4; 
+int potato_p4p5; 
 
 /* we're willing to wait for 3/4 of a second before deciding that the
    potatoes are to far apart */
@@ -106,7 +107,8 @@ int potato_p3p4;
 #define S_P1      1 /* we've gotten potato 1 */
 #define S_P2      2 /* we've gotten potato 2 */
 #define S_P3      3 /* we've gotten potato 3 */
-#define S_RUN     4 /* loop_end is set and we're away */
+#define S_P4      4 /* we've gotten potato 4 */
+#define S_RUN     5 /* loop_end is set and we're away */
 
 /* main state */
 int state = S_OFF;
@@ -119,6 +121,11 @@ int state = S_OFF;
 /* individual pedal states.  If the main state is OFF then these are
    ignored. */
 int pedal_states[3];
+
+void beep(){
+  char beeparr[] = {7, '\0'};
+  printf("%s", beeparr);
+}
 
 /* figure out which button is active, if any.  Returns one of MOUSE_A, MOUSE_4, MOUSE_3, or MOUSE_None */
 int get_mouse()
@@ -145,9 +152,7 @@ int get_mouse()
 /* if all our pedals are off, then we're off globally too */        
 void check_all_off()
 {
-  if (pedal_states[0] == pS_OFF &&
-      pedal_states[1] == pS_OFF &&
-      pedal_states[2] == pS_OFF) {
+  if (pedal_states[0] +  pedal_states[1] + pedal_states[2] == pS_OFF)
     state = S_OFF;
   }
 }
@@ -179,18 +184,27 @@ void respond_to_mouse(int mouse_press, int nframes) {
   case S_P3:
     printf("(potato 4)\n");
     potato_p3p4 = potato_time;
+    potato_time = 0;
+    state = S_P4;
+    break;
+  case S_P4:
+    printf("(start)\n");
+    potato_p4p5 = potato_time;
 
-    printf("potato times:\d\n");
+    printf("potato times:\n");
     printf("  %d\n", potato_p1p2);
     printf("  %d\n", potato_p2p3);
     printf("  %d\n", potato_p3p4);
+    printf("  %d\n", potato_p4p5);
     
-    int avg = (potato_p1p2 + potato_p2p3 + potato_p3p4)/3;
+    int avg = (potato_p1p2 + potato_p2p3 + potato_p3p4 + potato_p4p5)/4;
 
     printf("avg: %d\n",avg);
+
+    avg = potato_p4p5;
     
     loop_end = avg*nframes*64; /* 64 beats to the tune */
-    loop_pos = avg*nframes*63; /* one beat from the end of the tune */
+    loop_pos = 0; /* start at the beginning of the tune */
 
     printf("bpm: %d\n", BPM(loop_end));
 
@@ -213,55 +227,6 @@ void respond_to_mouse(int mouse_press, int nframes) {
       break;
     }
   }
-
-  /*
-  else if (state == S_P2
-
-    state = S_PRI_REC;
-    pedal_states[0] = pS_OFF;
-    pedal_states[1] = pS_OFF;
-    pedal_states[2] = pS_OFF;
-    pedal_states[primary] = pS_REC;
-    
-    loop_pos = 0;
-  }
-  else if (state == S_PRI_REC){
-    if (mouse_press == primary) {
-      printf ("playing primary %d\n", primary);
-      state = S_PLY;
-      pedal_states[primary] = pS_PLY;
-      loop_end = loop_pos;
-      loop_pos = 0;
-    }
-    else { state = S_OFF; }
-  }
-  else if (state == S_PLY){
-    
-    if (mouse_press == primary) {
-      for (int pedal = 0 ; pedal < 3 ; pedal++) {
-	if (pedal != primary && pedal_states[pedal] == pS_PLY) {
-	  primary = pedal;
-	  break;
-	}
-      }
-      if (mouse_press == primary) {
-	printf ("failed to find new primary\n");
-	state = S_OFF;
-	printf ("off\n");
-      }
-    }
-    else {
-      if (pedal_states[mouse_press] == pS_PLY) {
-	printf ("stopping %d\n", mouse_press);
-	pedal_states[mouse_press] = pS_OFF;
-      }
-      else {
-	printf ("waiting to record secondary %d\n", mouse_press);
-	pedal_states[mouse_press] = pS_WAIT_REC;
-      }
-    }
-  }
-  */
 }
 
 /**
@@ -292,6 +257,7 @@ int process (jack_nframes_t nframes, void *arg)
 	case S_P1:
 	case S_P2:
 	case S_P3:
+        case S_P4:
 	  potato_time++;
 	  if (potato_time * nframes >= TIMEOUT) {
 	    printf("potatoes timed out\n");
@@ -302,23 +268,34 @@ int process (jack_nframes_t nframes, void *arg)
 
 	  /* print loop location */
 	  if (loop_pos % (loop_end / 64) == 0) {
+	    if 
+	    beep();
 	    switch (loop_pos / (loop_end / 64)) {
 	    case 0:
-	      printf("A1\n");
+	      printf("A1......");
 	      break;
-	    case 15:
-	      printf("A2\n");
+	    case 16:
+	      printf("A2......");
 	      break;
-	    case 31:
-	      printf("B1\n");
+	    case 32:
+	      printf("B1......");
 	      break;
-	    case 47:
-	      printf("B2\n");
+	    case 48:
+	      printf("B2......");
 	      break;
 	    default:
-	      printf(".\n");
+	      if ((loop_pos / (loop_end / 64)) % 4 == 0) {
+		printf("........");
+	      }
+	      else if ((loop_pos / (loop_end / 64)) % 2 == 0) {
+		printf("....    ");
+	      }
+	      else {
+		printf(".       ");
+	      }
 	      break;
 	    }
+	    printf("              %d\n", (loop_pos / (loop_end / 64)));
 	  }
 
 	  for (int pedal = 0 ; pedal < 3 ; pedal++) {
@@ -336,7 +313,7 @@ int process (jack_nframes_t nframes, void *arg)
 
 	    if (pedal_states[pedal] == pS_PLY) {
 	      for (int i = 0 ; i < nframes ; i++) {
-		out[i] += loop_bufs[AMT_MEM*pedal + loop_pos, + i] / VOLUME_DECREASE;
+		out[i] += loop_bufs[AMT_MEM*pedal + loop_pos + i] / VOLUME_DECREASE;
 	      }
 	    }
 	    else if (pedal_states[pedal] == pS_REC) {
