@@ -326,9 +326,11 @@ int process (jack_nframes_t nframes, void *arg)
 	    }
 
 	  }
+
+	  loop_pos += nframes;
 	  break;
 	}
-	loop_pos += nframes;
+	
 	if (state == S_RUN && loop_pos >= loop_end) { loop_pos = 0 ;}
 	if (loop_pos >= AMT_MEM) {
 	  printf("ERROR: loop_pos >= AMT_MEM %d %d\n", loop_pos, AMT_MEM);
