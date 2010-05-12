@@ -24,6 +24,13 @@ Operation:
    time through.  This loop will immediately start playing when it's
    done recording.  Once playing, additional taps will quiet it.
 
+ - alternatively, use looper_potato and set the length of the loop
+   with taps at the beginning.  If you do this it make a 64 beat loop
+   suitable for contra dancing.
+
+ - alternately, use looper_rhythmpotato which is like looper_potato
+   but uses a special loop recorded during the inital taps instead of
+   the beeping.
 
 Warning: 
 
