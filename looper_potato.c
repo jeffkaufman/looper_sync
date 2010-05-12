@@ -269,7 +269,9 @@ int process (jack_nframes_t nframes, void *arg)
 
 	  /* print loop location */
 	  if (loop_pos % (loop_end / 64) == 0) {
-	    if (pedal_states[0] + pedal_states[1] + pedal_states[2] == pS_REC){
+	    if (pedal_states[0] != pS_PLY &&
+		pedal_states[1] != pS_PLY &&
+		pedal_states[2] != pS_PLY){
 	      /* only one is recording and the rest are off */
 	      beep();
 	    }
