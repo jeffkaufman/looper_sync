@@ -22,7 +22,7 @@
    divide all sounds by 4 before giving them to the speaker.
    Unfortunately, that's too soft on my system, so we only divide by
    2.  There is some danger of clipping. */
-#define VOLUME_DECREASE 2
+#define VOLUME_DECREASE 1
 
 /* hardcoded sample rate so we can make buffer sizes depend on the
    number of samples in 60 seconds */
@@ -153,7 +153,7 @@ int get_mouse()
 /* if all our pedals are off, then we're off globally too */        
 void check_all_off()
 {
-  if (pedal_states[0] + pedal_states[1] + pedal_states[2] == pS_OFF)
+  if (pedal_states[0] + pedal_states[1] + pedal_states[2] == pS_OFF) {
     state = S_OFF;
   }
 }
