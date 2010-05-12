@@ -113,9 +113,10 @@ int potato_p4p5;
 /* main state */
 int state = S_OFF;
 
+/* that off is 0 and rec is 1 are required by the code */
 #define pS_OFF    0 /* this pedal is off */
-#define pS_WREC   1 /* this pedal is waiting for the beginning of the tune to start recording */
-#define pS_REC    2 /* we're recording to the buffer for this pedal */
+#define pS_WREC   2 /* this pedal is waiting for the beginning of the tune to start recording */
+#define pS_REC    1 /* we're recording to the buffer for this pedal */
 #define pS_PLY    3 /* we're playing from the buffer for this pedal */
 
 /* individual pedal states.  If the main state is OFF then these are
@@ -152,7 +153,7 @@ int get_mouse()
 /* if all our pedals are off, then we're off globally too */        
 void check_all_off()
 {
-  if (pedal_states[0] +  pedal_states[1] + pedal_states[2] == pS_OFF)
+  if (pedal_states[0] + pedal_states[1] + pedal_states[2] == pS_OFF)
     state = S_OFF;
   }
 }
@@ -268,8 +269,10 @@ int process (jack_nframes_t nframes, void *arg)
 
 	  /* print loop location */
 	  if (loop_pos % (loop_end / 64) == 0) {
-	    if 
-	    beep();
+	    if (pedal_states[0] + pedal_states[1] + pedal_states[2] == pS_REC){
+	      /* only one is recording and the rest are off */
+	      beep();
+	    }
 	    switch (loop_pos / (loop_end / 64)) {
 	    case 0:
 	      printf("A1......");
